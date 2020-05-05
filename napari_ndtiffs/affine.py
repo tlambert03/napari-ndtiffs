@@ -167,6 +167,15 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
     else:
         channel_type = cl.DTYPE_TO_CHANNEL_TYPE[dtype]
 
+    print(
+        "\nctx", ctx,
+        "\nflags", mode_flags | cl.mem_flags.COPY_HOST_PTR,
+        "\nformat", cl.ImageFormat(img_format, channel_type),
+        "\nshape", shape[::-1],
+        "\nstrides", strides[::-1][1:],
+        "\nary", ary.dtype, ary.shape
+    )
+
     return cl.Image(
         ctx,
         mode_flags | cl.mem_flags.COPY_HOST_PTR,

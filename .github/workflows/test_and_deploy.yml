@@ -37,8 +37,8 @@ jobs:
         shell: bash -l {0}
         run: pytest -v --cov=./ --cov-report=xml
       - name: Coverage
-        shell: bash -l {0}
         uses: codecov/codecov-action@v1
+
 
   # ubuntu-latest:
   #   runs-on: ubuntu-latest

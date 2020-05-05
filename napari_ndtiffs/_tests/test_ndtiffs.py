@@ -3,6 +3,9 @@
 from napari_ndtiffs import napari_get_reader, affine
 from scipy.ndimage import affine_transform
 import numpy as np
+import pytest
+
+cl = pytest.importorskip("pyopencl")
 
 
 def test_get_reader_pass():
@@ -10,7 +13,27 @@ def test_get_reader_pass():
     assert reader is None
 
 
-def test_affine_nearest():
+devices = [d for p in cl.get_platforms() for d in p.get_devices()]
+names = [d.name[:30] for d in devices]
+
+
+@pytest.fixture(params=devices, ids=names)
+def all_gpus(monkeypatch, request):
+    def patched_func():
+        class holder:
+            pass
+
+        GPU = holder()
+
+        GPU.device = request.param
+        GPU.ctx = cl.Context(devices=[GPU.device])
+        GPU.queue = cl.CommandQueue(GPU.ctx)
+        return GPU
+
+    monkeypatch.setattr(affine, "get_gpu", patched_func)
+
+
+def test_affine_nearest(all_gpus):
     assert affine.cl
 
     arr = np.ones((64, 256, 256))
@@ -21,7 +44,7 @@ def test_affine_nearest():
     assert np.allclose(scipy_, ours)
 
 
-def test_affine_linear():
+def test_affine_linear(all_gpus):
     assert affine.cl
 
     arr = np.ones((64, 256, 256))

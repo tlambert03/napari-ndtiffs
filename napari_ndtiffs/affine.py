@@ -84,7 +84,7 @@ def get_best_device():
         ],
         key=lambda x: x.type * 1e12 + x.get_info(cl.device_info.GLOBAL_MEM_SIZE),
         reverse=True,
-    )[-1]
+    )[0]
 
 
 def get_gpu(reload=False):
@@ -131,8 +131,9 @@ def _debug_context(ctx):
                 print(f" {attr}", getattr(device, attr))
 
 
-def _get_supported_image_format(ctx, num_channels, dtype, ndim, mode="rw"):
-
+@lru_cache(maxsize=32)
+def _get_image_format(ctx, num_channels, dtype, ndim, mode="rw"):
+    """Maximize chance of finding a supported image format."""
     if mode == "rw":
         mode_flag = cl.mem_flags.READ_WRITE
     elif mode == "r":
@@ -216,9 +217,7 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
     else:
         raise ValueError("invalid value '%s' for 'mode'" % mode)
 
-    img_format, reshape = _get_supported_image_format(
-        ctx, num_channels, dtype, ary.ndim
-    )
+    img_format, reshape = _get_image_format(ctx, num_channels, dtype, ary.ndim)
     if reshape:
         import warnings
 
@@ -228,22 +227,6 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
         strides = ary.strides[:-1]
 
     assert ary.strides[-1] == ary.dtype.itemsize
-
-    print(
-        "\nctx",
-        ctx,
-        "\nflags",
-        mode_flags | cl.mem_flags.COPY_HOST_PTR,
-        "\nformat",
-        img_format,
-        "\nshape",
-        shape[::-1],
-        "\nstrides",
-        strides[::-1][1:],
-        "\nary",
-        ary.dtype,
-        ary.shape,
-    )
 
     return cl.Image(
         ctx,

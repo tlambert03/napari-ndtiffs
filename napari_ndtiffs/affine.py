@@ -131,6 +131,52 @@ def _debug_context(ctx):
                 print(f" {attr}", getattr(device, attr))
 
 
+def _get_supported_image_format(ctx, num_channels, dtype, ndim, mode="rw"):
+
+    if mode == "rw":
+        mode_flag = cl.mem_flags.READ_WRITE
+    elif mode == "r":
+        mode_flag = cl.mem_flags.READ_ONLY
+    elif mode == "w":
+        mode_flag = cl.mem_flags.WRITE_ONLY
+    else:
+        raise ValueError("invalid value '%s' for 'mode'" % mode)
+
+    if ndim == 3:
+        _dim = cl.mem_object_type.IMAGE3D
+    elif ndim == 2:
+        _dim = cl.mem_object_type.IMAGE2D
+    elif ndim == 1:
+        _dim = cl.mem_object_type.IMAGE1D
+    else:
+        raise ValueError(f"Unsupported number of image dimensions: {ndim}")
+
+    supported_formats = cl.get_supported_image_formats(ctx, mode_flag, _dim)
+    channel_type = cl.DTYPE_TO_CHANNEL_TYPE[dtype]
+
+    if num_channels == 1:
+        for order in [
+            cl.channel_order.INTENSITY,
+            cl.channel_order.R,
+            cl.channel_order.Rx,
+            cl.channel_order.A,
+        ]:
+            fmt = cl.ImageFormat(order, channel_type)
+            if fmt in supported_formats:
+                return fmt
+        raise ValueError(
+            f"No supported ImageFormat found for dtype {dtype} with 1 channel\n",
+            f"Supported formats include: {supported_formats}",
+        )
+    img_format = {
+        2: cl.channel_order.RG,
+        3: cl.channel_order.RGB,
+        4: cl.channel_order.RGBA,
+    }[num_channels]
+
+    return (cl.ImageFormat(img_format, channel_type),)
+
+
 # vendored from pyopencl.image_from_array so that we can change the img_format
 # used for a single channel image to channel_order.INTENSITY
 def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
@@ -168,21 +214,9 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
     else:
         raise ValueError("invalid value '%s' for 'mode'" % mode)
 
-    img_format = {
-        1: cl.channel_order.INTENSITY,  # broader support on CPU?
-        2: cl.channel_order.RG,
-        3: cl.channel_order.RGB,
-        4: cl.channel_order.RGBA,
-    }[num_channels]
+    img_format = _get_supported_image_format(ctx, num_channels, dtype, ary.ndim)
 
     assert ary.strides[-1] == ary.dtype.itemsize
-
-    if norm_int:
-        channel_type = cl.DTYPE_TO_CHANNEL_TYPE_NORM[dtype]
-    else:
-        channel_type = cl.DTYPE_TO_CHANNEL_TYPE[dtype]
-
-    _debug_context(ctx)
 
     print(
         "\nctx",
@@ -190,7 +224,7 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
         "\nflags",
         mode_flags | cl.mem_flags.COPY_HOST_PTR,
         "\nformat",
-        cl.ImageFormat(img_format, channel_type),
+        img_format,
         "\nshape",
         shape[::-1],
         "\nstrides",
@@ -203,7 +237,7 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
     return cl.Image(
         ctx,
         mode_flags | cl.mem_flags.COPY_HOST_PTR,
-        cl.ImageFormat(img_format, channel_type),
+        img_format,
         shape=shape[::-1],
         pitches=strides[::-1][1:],
         hostbuf=ary,

@@ -117,11 +117,19 @@ def get_affine_program(ctx, order: int = 1, mode="constant"):
 
 
 def _debug_context(ctx):
+
+    print(
+        cl.get_supported_image_formats(
+            ctx, cl.mem_flags.READ_WRITE, cl.mem_object_type.IMAGE3D
+        )
+    )
+
     for device in ctx.devices:
         print("DEVICE: ", device)
         for attr in dir(device):
             if attr.startswith("image"):
                 print(f" {attr}", getattr(device, attr))
+
 
 # vendored from pyopencl.image_from_array so that we can change the img_format
 # used for a single channel image to channel_order.INTENSITY
@@ -173,16 +181,23 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
         channel_type = cl.DTYPE_TO_CHANNEL_TYPE_NORM[dtype]
     else:
         channel_type = cl.DTYPE_TO_CHANNEL_TYPE[dtype]
-    
+
     _debug_context(ctx)
 
     print(
-        "\nctx", ctx,
-        "\nflags", mode_flags | cl.mem_flags.COPY_HOST_PTR,
-        "\nformat", cl.ImageFormat(img_format, channel_type),
-        "\nshape", shape[::-1],
-        "\nstrides", strides[::-1][1:],
-        "\nary", ary.dtype, ary.shape
+        "\nctx",
+        ctx,
+        "\nflags",
+        mode_flags | cl.mem_flags.COPY_HOST_PTR,
+        "\nformat",
+        cl.ImageFormat(img_format, channel_type),
+        "\nshape",
+        shape[::-1],
+        "\nstrides",
+        strides[::-1][1:],
+        "\nary",
+        ary.dtype,
+        ary.shape,
     )
 
     return cl.Image(

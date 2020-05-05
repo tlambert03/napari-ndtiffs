@@ -79,7 +79,7 @@ jobs:
   #         PLATFORM: ${{ matrix.platform }}
 
   deploy:
-    needs: [ubuntu-latest, mac-win]
+    # needs: [ubuntu-latest, mac-win]
     runs-on: ubuntu-latest
     if: contains(github.ref, 'tags')
     steps:

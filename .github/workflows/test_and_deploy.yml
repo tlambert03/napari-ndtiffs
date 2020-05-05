@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y ocl-icd-libopencl1
+          sudo apt install -y ocl-icd-opencl-dev
           python -m pip install --upgrade pip
           pip install setuptools tox tox-gh-actions
       - name: Test with tox
@@ -29,28 +29,28 @@ jobs:
       - name: Coverage
         uses: codecov/codecov-action@v1
 
-  # minimizing matrix by only testing 3.6 on mac & windows
-  mac-win:
-    name: ${{ matrix.platform }} (3.6)
-    runs-on: ${{ matrix.platform }}
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.6
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.6
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools tox tox-gh-actions
-      - name: Test with tox
-        run: tox
-        env:
-          PLATFORM: ${{ matrix.platform }}
+  # # minimizing matrix by only testing 3.6 on mac & windows
+  # mac-win:
+  #   name: ${{ matrix.platform }} (3.6)
+  #   runs-on: ${{ matrix.platform }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform: [macos-latest, windows-latest]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set up Python 3.6
+  #       uses: actions/setup-python@v1
+  #       with:
+  #         python-version: 3.6
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install setuptools tox tox-gh-actions
+  #     - name: Test with tox
+  #       run: tox
+  #       env:
+  #         PLATFORM: ${{ matrix.platform }}
 
   deploy:
     needs: [ubuntu-latest, mac-win]

@@ -84,7 +84,7 @@ def get_best_device():
         ],
         key=lambda x: x.type * 1e12 + x.get_info(cl.device_info.GLOBAL_MEM_SIZE),
         reverse=True,
-    )[0]
+    )[-1]
 
 
 def get_gpu(reload=False):
@@ -115,6 +115,13 @@ def get_affine_program(ctx, order: int = 1, mode="constant"):
     affine_prg.build(options=orders[order] + modes[mode])
     return affine_prg
 
+
+def _debug_context(ctx):
+    for device in ctx.devices:
+        print("DEVICE: ", device)
+        for attr in dir(device):
+            if attr.startswith("image"):
+                print(f" {attr}", getattr(device, attr))
 
 # vendored from pyopencl.image_from_array so that we can change the img_format
 # used for a single channel image to channel_order.INTENSITY
@@ -166,6 +173,8 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
         channel_type = cl.DTYPE_TO_CHANNEL_TYPE_NORM[dtype]
     else:
         channel_type = cl.DTYPE_TO_CHANNEL_TYPE[dtype]
+    
+    _debug_context(ctx)
 
     print(
         "\nctx", ctx,

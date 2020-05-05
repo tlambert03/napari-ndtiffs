@@ -12,15 +12,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: ['3.6', '3.7', '3.8']
 
     steps:
       - uses: actions/checkout@v2
       - uses: goanpeca/setup-miniconda@v1
         with:
-          auto-update-conda: true
-          channels: conda-forge
           python-version: ${{ matrix.python-version }}
+          channels: conda-forge
       - name: Conda info
         shell: bash -l {0}
         run: conda info
@@ -28,9 +27,10 @@ jobs:
         run: |
           conda install -y pyopencl pocl
           python -m pip install --upgrade pip
-          pip install setuptools tox tox-gh-actions
-      - name: Test with tox
-        run: tox
+          pip install setuptools tox tox-gh-actions pytest pytest-cov
+          pip install -e .
+      - name: Test
+        run: pytest -v --cov=./ --cov-report=xml
       - name: Coverage
         uses: codecov/codecov-action@v1
 

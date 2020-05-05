@@ -32,6 +32,7 @@ jobs:
     name: ${{ matrix.platform }} (3.6)
     runs-on: ${{ matrix.platform }}
     strategy:
+      fail-fast: false
       matrix:
         platform: [macos-latest, windows-latest]
     steps:

@@ -2,9 +2,26 @@ try:
     from ._version import version as __version__
 except ImportError:
     __version__ = "unknown"
+__author__ = "Talley Lambert"
+__email__ = "talley.lambert@gmail.com"
+__all__ = [
+    "napari_get_reader",
+    "parse_settings",
+    "reader_function",
+    "resize_cache",
+    "cache_info",
+]
 
-# replace the asterisk with named imports
-from .ndtiffs import napari_get_reader
+
+from typing import Optional
+
+from napari_plugin_engine import napari_hook_implementation
+
+from .reader import PathLike, ReaderFunction, has_lls_data, reader_function
+from .settingstxt import parse_settings
 
 
-__all__ = ["napari_get_reader"]
+@napari_hook_implementation
+def napari_get_reader(path: PathLike) -> Optional[ReaderFunction]:
+    if isinstance(path, str) and has_lls_data(path):
+        return reader_function

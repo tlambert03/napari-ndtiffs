@@ -159,11 +159,13 @@ def _get_supported_image_format(ctx, num_channels, dtype, ndim, mode="rw"):
             cl.channel_order.INTENSITY,
             cl.channel_order.R,
             cl.channel_order.Rx,
-            cl.channel_order.A,
         ]:
             fmt = cl.ImageFormat(order, channel_type)
             if fmt in supported_formats:
-                return fmt
+                return fmt, 0
+        fmt = cl.ImageFormat(cl.channel_order.RGBA, channel_type)
+        if fmt in supported_formats:
+            return fmt, 1
         raise ValueError(
             f"No supported ImageFormat found for dtype {dtype} with 1 channel\n",
             f"Supported formats include: {supported_formats}",
@@ -174,7 +176,7 @@ def _get_supported_image_format(ctx, num_channels, dtype, ndim, mode="rw"):
         4: cl.channel_order.RGBA,
     }[num_channels]
 
-    return (cl.ImageFormat(img_format, channel_type),)
+    return cl.ImageFormat(img_format, channel_type), 0
 
 
 # vendored from pyopencl.image_from_array so that we can change the img_format
@@ -214,7 +216,16 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
     else:
         raise ValueError("invalid value '%s' for 'mode'" % mode)
 
-    img_format = _get_supported_image_format(ctx, num_channels, dtype, ary.ndim)
+    img_format, reshape = _get_supported_image_format(
+        ctx, num_channels, dtype, ary.ndim
+    )
+    if reshape:
+        import warnings
+
+        warnings.warn("Device support forced reshaping of single channel array to RGBA")
+        ary = np.ascontiguousarray(np.repeat(ary[..., np.newaxis], 4, axis=-1))
+        shape = ary.shape[:-1]
+        strides = ary.strides[:-1]
 
     assert ary.strides[-1] == ary.dtype.itemsize
 

@@ -116,6 +116,67 @@ def get_affine_program(ctx, order: int = 1, mode="constant"):
     return affine_prg
 
 
+# vendored from pyopencl.image_from_array so that we can change the img_format
+# used for a single channel image to channel_order.INTENSITY
+def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
+    if not ary.flags.c_contiguous:
+        raise ValueError("array must be C-contiguous")
+
+    dtype = ary.dtype
+    if num_channels is None:
+
+        import pyopencl.cltypes
+
+        try:
+            dtype, num_channels = pyopencl.cltypes.vec_type_to_scalar_and_count[dtype]
+        except KeyError:
+            # It must be a scalar type then.
+            num_channels = 1
+
+        shape = ary.shape
+        strides = ary.strides
+
+    elif num_channels == 1:
+        shape = ary.shape
+        strides = ary.strides
+    else:
+        if ary.shape[-1] != num_channels:
+            raise RuntimeError("last dimension must be equal to number of channels")
+
+        shape = ary.shape[:-1]
+        strides = ary.strides[:-1]
+
+    if mode == "r":
+        mode_flags = cl.mem_flags.READ_ONLY
+    elif mode == "w":
+        mode_flags = cl.mem_flags.WRITE_ONLY
+    else:
+        raise ValueError("invalid value '%s' for 'mode'" % mode)
+
+    img_format = {
+        1: cl.channel_order.INTENSITY,  # broader support on CPU?
+        2: cl.channel_order.RG,
+        3: cl.channel_order.RGB,
+        4: cl.channel_order.RGBA,
+    }[num_channels]
+
+    assert ary.strides[-1] == ary.dtype.itemsize
+
+    if norm_int:
+        channel_type = cl.DTYPE_TO_CHANNEL_TYPE_NORM[dtype]
+    else:
+        channel_type = cl.DTYPE_TO_CHANNEL_TYPE[dtype]
+
+    return cl.Image(
+        ctx,
+        mode_flags | cl.mem_flags.COPY_HOST_PTR,
+        cl.ImageFormat(img_format, channel_type),
+        shape=shape[::-1],
+        pitches=strides[::-1][1:],
+        hostbuf=ary,
+    )
+
+
 def image_from_array(arr, ctx, *args, **kwargs):
 
     if arr.ndim not in {2, 3, 4}:
@@ -129,7 +190,7 @@ def image_from_array(arr, ctx, *args, **kwargs):
         res.dtype = np.float32
     else:
         num_channels = arr.shape[-1] if arr.ndim == 4 else 1
-        res = cl.image_from_array(
+        res = _image_from_array(
             ctx, np.ascontiguousarray(arr), num_channels=num_channels, *args, **kwargs
         )
         res.dtype = arr.dtype

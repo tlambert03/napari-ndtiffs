@@ -8,7 +8,7 @@
 
 napari plugin for nd tiff folders with optional OpenCl-based deskewing.
 
-Built-in support for folders of (skewed) lattice light sheet tiffs. file.
+Built-in support for folders of (skewed) lattice light sheet tiffs.
 
 ![napari-ndtiffs demo](demo.gif)
 
@@ -31,7 +31,13 @@ Built-in support for folders of (skewed) lattice light sheet tiffs. file.
 
 It would not be hard to support arbitrary filenaming patterns!  If you have a
 folder of tiffs with a consistent naming scheme and would like to take advantage
-of this plugin, feel free to open an issue!*
+of this plugin, feel free to open an issue!
+
+## Installation
+
+You can install `napari-ndtiffs` via [pip]:
+
+    pip install napari-ndtiffs
 
 ## Usage
 
@@ -71,12 +77,6 @@ Or, from command line, use:
 ```bash
 napari path/to/lls_mitosis.zip
 ```
-
-## Installation
-
-You can install `napari-ndtiffs` via [pip]:
-
-    pip install napari-ndtiffs
 
 ## Debugging
 

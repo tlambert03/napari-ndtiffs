@@ -1,6 +1,6 @@
 # napari-ndtiffs
 
-[![License](https://img.shields.io/pypi/l/napari-ndtiffs.svg?color=green)](https://github.com/napari/napari-ndtiffs/raw/master/LICENSE)
+[![License](https://img.shields.io/pypi/l/napari-ndtiffs.svg?color=green)](https://raw.githubusercontent.com/tlambert03/napari-ndtiffs/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/napari-ndtiffs.svg?color=green)](https://pypi.org/project/napari-ndtiffs)
 [![Python Version](https://img.shields.io/pypi/pyversions/napari-ndtiffs.svg?color=green)](https://python.org)
 [![tests](https://github.com/tlambert03/napari-ndtiffs/workflows/tests/badge.svg)](https://github.com/tlambert03/napari-ndtiffs/actions)

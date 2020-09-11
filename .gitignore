@@ -81,3 +81,4 @@ target/
 
 # JetBrains
 .idea/
+.mypy_cache

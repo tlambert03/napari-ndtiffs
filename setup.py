@@ -30,6 +30,7 @@ setup(
     packages=find_packages(),
     python_requires=">=3.6",
     install_requires=requirements,
+    extras_require={"opencl": ["pyopencl"]},
     use_scm_version={"write_to": "napari_ndtiffs/_version.py"},
     setup_requires=["setuptools_scm"],
     classifiers=[

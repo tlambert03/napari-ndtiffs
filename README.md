@@ -38,6 +38,10 @@ of this plugin, feel free to open an issue!
 You can install `napari-ndtiffs` via [pip]:
 
     pip install napari-ndtiffs
+    
+To also install PyOpenCL (for faster deskewing):
+    
+    pip install napari-ndtiffs[opencl]
 
 ## Usage
 

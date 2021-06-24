@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-
-from napari_ndtiffs import napari_get_reader, affine
-from scipy.ndimage import affine_transform
 import numpy as np
+import pyopencl as cl
 import pytest
-
-cl = pytest.importorskip("pyopencl")
+from napari_ndtiffs import _ocl_affine as affine
+from napari_ndtiffs import napari_get_reader
+from scipy.ndimage import affine_transform
 
 
 def test_get_reader_pass():

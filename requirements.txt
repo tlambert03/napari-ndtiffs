@@ -1,6 +1,0 @@
-dask[array]
-napari_plugin_engine>=0.1.4
-numpy
-python-dateutil
-scipy
-tifffile

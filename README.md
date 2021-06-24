@@ -10,7 +10,7 @@ napari plugin for nd tiff folders with optional OpenCl-based deskewing.
 
 Built-in support for folders of (skewed) lattice light sheet tiffs.
 
-![napari-ndtiffs demo](demo.gif)
+![napari-ndtiffs demo](https://github.com/tlambert03/napari-ndtiffs/raw/master/demo.gif)
 
 ----------------------------------
 
@@ -37,11 +37,15 @@ of this plugin, feel free to open an issue!
 
 You can install `napari-ndtiffs` via [pip]:
 
-    pip install napari-ndtiffs
-    
+```shell
+pip install napari-ndtiffs
+```
+
 To also install PyOpenCL (for faster deskewing):
-    
-    pip install napari-ndtiffs[opencl]
+
+```shell
+pip install napari-ndtiffs[opencl]
+```
 
 ## Usage
 

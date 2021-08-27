@@ -8,14 +8,17 @@ logger = logging.getLogger(__name__)
 
 def deskew_block(block, mat=None, out_shape=None, padval=0):
     try:
-        from ._ocl_affine import affine_transform
+        from ._cupy_affine import affine_transform
     except ImportError:
-        from scipy.ndimage.interpolation import affine_transform
+        try:
+            from ._ocl_affine import affine_transform
+        except ImportError:
+            from scipy.ndimage.interpolation import affine_transform
 
-        logger.warning(
-            "Could not import pyopencl. "
-            "Falling back to scipy for CPU affine transforms"
-        )
+            logger.warning(
+                "Could not import cupy or pyopencl. "
+                "Falling back to scipy for CPU affine transforms"
+            )
 
     extradims = block.ndim - 3
     last3dims = (0,) * extradims + (slice(None),) * 3

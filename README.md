@@ -100,7 +100,7 @@ To monitor file io and deskew activity, enter the following in the napari consol
 
 ```python
 import logging
-logging.getLogger('napari_llsfolder').setLevel('DEBUG')
+logging.getLogger('napari_ndtiffs').setLevel('DEBUG')
 ```
 
 

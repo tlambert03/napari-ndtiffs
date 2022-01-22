@@ -6,7 +6,7 @@
 [![tests](https://github.com/tlambert03/napari-ndtiffs/workflows/tests/badge.svg)](https://github.com/tlambert03/napari-ndtiffs/actions)
 [![codecov](https://codecov.io/gh/tlambert03/napari-ndtiffs/branch/master/graph/badge.svg)](https://codecov.io/gh/tlambert03/napari-ndtiffs)
 
-napari plugin for nd tiff folders with optional OpenCl-based deskewing.
+napari plugin for nd tiff folders with optional CUDA or OpenCL-based deskewing.
 
 Built-in support for folders of (skewed) lattice light sheet tiffs.
 
@@ -26,8 +26,11 @@ Built-in support for folders of (skewed) lattice light sheet tiffs.
 - Lazily loads dataset on demand.  quickly load preview your data.
 - Handles `.zip` archives as well!  Just directly compress your tiff folder,
   then drop it into napari.
-- All-openCL deskewing, works on GPU as well as CPU, falls back to scipy if
-  pyopencl is unavailable.
+- All OpenCL deskewing, works on GPU as well as CPU, falls back to scipy if
+  [PyOpenCL] is unavailable.
+- CuPy-based deskewing will work for cards with NVIDIA GPUs that support CUDA.
+  CuPy 8.x releases should work, although CuPy >= 9 is recommended. If [CuPy]
+  is unavailable, the [PyOpenCL] implementation is used instead.
 
 It would not be hard to support arbitrary filenaming patterns!  If you have a
 folder of tiffs with a consistent naming scheme and would like to take advantage
@@ -46,6 +49,11 @@ To also install PyOpenCL (for faster deskewing):
 ```shell
 pip install napari-ndtiffs[opencl]
 ```
+
+On NVIDIA GPUs with CUDA support, the [CuPy] implementation may be faster than
+[PyOpenCL]. CuPy also has experimental support for AMD GPUs via HIP/ROCm. See
+the CuPy [installation instructions](https://docs.cupy.dev/en/stable/install.html)
+
 
 ## Usage
 
@@ -92,7 +100,7 @@ To monitor file io and deskew activity, enter the following in the napari consol
 
 ```python
 import logging
-logging.getLogger('napari_llsfolder').setLevel('DEBUG')
+logging.getLogger('napari_ndtiffs').setLevel('DEBUG')
 ```
 
 
@@ -120,3 +128,5 @@ If you encounter any problems, please [file an issue] along with a detailed desc
 [tox]: https://tox.readthedocs.io/en/latest/
 [pip]: https://pypi.org/project/pip/
 [PyPI]: https://pypi.org/
+[PyOpenCL]: https://documen.tician.de/pyopencl/
+[CuPy]: https://docs.cupy.dev/

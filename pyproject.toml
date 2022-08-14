@@ -4,4 +4,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.napari.manifest]
 display_name = "ND-Tiffs"
-icon = "https://github.com/tlambert03/napari-ndtiffs/raw/master/ndtiffs.png"
+icon = "https://gitcdn.link/cdn/tlambert03/napari-ndtiffs/HEAD/ndtiffs.png"

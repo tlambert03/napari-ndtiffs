@@ -1,0 +1,7 @@
+[build-system]
+requires = ["setuptools>=42.0.0", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.napari.manifest]
+display_name = "ND-Tiffs"
+icon = "https://github.com/tlambert03/napari-ndtiffs/raw/master/ndtiffs.png"

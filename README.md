@@ -1,16 +1,16 @@
 # napari-ndtiffs
 
-[![License](https://img.shields.io/pypi/l/napari-ndtiffs.svg?color=green)](https://raw.githubusercontent.com/tlambert03/napari-ndtiffs/master/LICENSE)
+[![License](https://img.shields.io/pypi/l/napari-ndtiffs.svg?color=green)](https://raw.githubusercontent.com/tlambert03/napari-ndtiffs/main/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/napari-ndtiffs.svg?color=green)](https://pypi.org/project/napari-ndtiffs)
 [![Python Version](https://img.shields.io/pypi/pyversions/napari-ndtiffs.svg?color=green)](https://python.org)
 [![tests](https://github.com/tlambert03/napari-ndtiffs/workflows/tests/badge.svg)](https://github.com/tlambert03/napari-ndtiffs/actions)
-[![codecov](https://codecov.io/gh/tlambert03/napari-ndtiffs/branch/master/graph/badge.svg)](https://codecov.io/gh/tlambert03/napari-ndtiffs)
+[![codecov](https://codecov.io/gh/tlambert03/napari-ndtiffs/branch/main/graph/badge.svg)](https://codecov.io/gh/tlambert03/napari-ndtiffs)
 
 napari plugin for nd tiff folders with optional CUDA or OpenCL-based deskewing.
 
 Built-in support for folders of (skewed) lattice light sheet tiffs.
 
-![napari-ndtiffs demo](https://github.com/tlambert03/napari-ndtiffs/raw/master/demo.gif)
+![napari-ndtiffs demo](https://github.com/tlambert03/napari-ndtiffs/raw/main/demo.gif)
 
 ----------------------------------
 

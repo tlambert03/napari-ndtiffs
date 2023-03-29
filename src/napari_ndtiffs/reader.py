@@ -26,7 +26,7 @@ PathLike = Union[str, List[str]]
 ReaderFunction = Callable[[PathLike], List[LayerData]]
 
 # this dict holds any overrides parameter overrides that the user wants
-OVERRIDES: Dict[str, Any] = {}
+OVERRIDES: dict[str, Any] = {}
 
 
 @contextmanager
@@ -95,7 +95,7 @@ def has_lls_data(path):
 
 def get_tiff_meta(
     path: str, in_zip: str | None = None
-) -> Tuple[Tuple[int, int], np.dtype, float, float, Tuple[int, int]]:
+) -> tuple[tuple[int, int], np.dtype, float, float, tuple[int, int]]:
     dx, dz = 1.0, 1.0
     if in_zip:
         with zipfile.ZipFile(in_zip) as zf:
@@ -124,7 +124,7 @@ def get_tiff_meta(
     return shape, dtype, dx, dz, clims
 
 
-def reader_function(path: PathLike) -> List[LayerData]:
+def reader_function(path: PathLike) -> list[LayerData]:
     """Take a path or list of paths and return a list of LayerData tuples."""
 
     try:
@@ -132,7 +132,7 @@ def reader_function(path: PathLike) -> List[LayerData]:
     except FileNotFoundError:
         settings = {}
     in_zip = str(path) if zipfile.is_zipfile(path) else None
-    channels: Dict[Any, Tuple[int, list]] = {}
+    channels: dict[Any, tuple[int, list]] = {}
     if in_zip:
         with zipfile.ZipFile(path) as zf:
             filelist = zf.namelist()

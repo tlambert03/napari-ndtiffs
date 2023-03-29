@@ -56,8 +56,8 @@ dev = [
 "Source Code" = "https://github.com/tlambert03/napari-ndtiffs"
 "User Support" = "https://github.com/tlambert03/napari-ndtiffs/issues"
 
-[project.entry-points."napari.plugin"]
-ndtiffs = "napari_ndtiffs"
+[project.entry-points."napari.manifest"]
+ndtiffs = "napari_ndtiffs:napari.yaml"
 
 # https://github.com/charliermarsh/ruff
 [tool.ruff]

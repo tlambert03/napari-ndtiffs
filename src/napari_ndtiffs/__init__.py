@@ -33,5 +33,5 @@ from .settingstxt import parse_settings
 @napari_hook_implementation
 def napari_get_reader(path: PathLike) -> Optional[ReaderFunction]:
     if isinstance(path, str) and has_lls_data(path):
-        return reader_function
+        return reader_function  # type: ignore
     return None

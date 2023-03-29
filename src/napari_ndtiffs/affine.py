@@ -1,5 +1,6 @@
 """Deskew utilities"""
 import logging
+from functools import lru_cache
 from time import time
 
 import numpy as np
@@ -7,7 +8,8 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def deskew_block(block, mat=None, out_shape=None, padval=0):
+@lru_cache(maxsize=None)
+def _get_backend():
     try:
         from ._cupy_affine import affine_transform
 
@@ -28,7 +30,11 @@ def deskew_block(block, mat=None, out_shape=None, padval=0):
                 "Could not import CuPy or PyOpenCL. "
                 "Falling back to SciPy for CPU affine transforms"
             )
+    return affine_transform, backend_name
 
+
+def deskew_block(block, mat=None, out_shape=None, padval=0):
+    affine_transform, backend_name = _get_backend()
     extradims = block.ndim - 3
     last3dims = (0,) * extradims + (slice(None),) * 3
     array = block[last3dims]
@@ -52,7 +58,7 @@ def get_deskew_func(shape, dz=0.5, dx=0.1, angle=31.5, padval=0):
     (nz, ny, nx) = shape[-3:]
     out_shape = [1] * (len(shape) - 3) + list(shape[-3:])
     # new nx
-    out_shape[-1] = np.int(np.floor((nz - 1) * -mat[2, 0]) + nx)
+    out_shape[-1] = int(np.floor((nz - 1) * -mat[2, 0]) + nx)
     new_dzdx_ratio = np.sin(np.deg2rad(angle)) * dz / dx
 
     def noisy_deskew(arr):

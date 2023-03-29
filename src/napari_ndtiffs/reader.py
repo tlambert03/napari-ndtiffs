@@ -92,7 +92,7 @@ def has_lls_data(path):
 
 
 def get_tiff_meta(
-    path: str, in_zip: str = None
+    path: str, in_zip: str | None = None
 ) -> Tuple[Tuple[int, int], np.dtype, float, float, Tuple[int, int]]:
     dx, dz = 1.0, 1.0
     if in_zip:
@@ -130,12 +130,12 @@ def reader_function(path: PathLike) -> List[LayerData]:
     except FileNotFoundError:
         settings = {}
     in_zip = str(path) if zipfile.is_zipfile(path) else None
-    channels = dict()
+    channels: Dict[Any, Tuple[int, list]] = {}
     if in_zip:
         with zipfile.ZipFile(path) as zf:
             filelist = zf.namelist()
     else:
-        filelist = glob.glob(os.path.join(path, "*.tif"))
+        filelist = glob.glob(os.path.join(str(path), "*.tif"))
     for fname in filelist:
         match = lls_pattern.match(fname)
         if match:
@@ -159,7 +159,7 @@ def reader_function(path: PathLike) -> List[LayerData]:
         ]
         stack = da.stack(dask_arrays, axis=0)
         data.append(stack)
-    data = da.stack(data)
+    stacked_data = da.stack(data)
 
     dx = OVERRIDES.get("dx") or dx
     dz = OVERRIDES.get("dz") or dz
@@ -175,13 +175,15 @@ def reader_function(path: PathLike) -> List[LayerData]:
 
         if shape[-1] <= settings["params"]["ny"] and angle > 0:
             deskew_func, new_shape, dzdx_ratio = get_deskew_func(
-                data.shape,
+                stacked_data.shape,
                 dx=OVERRIDES.get("dx") or settings["params"]["dx"],
                 dz=OVERRIDES.get("dz") or settings["params"]["dz"],
                 angle=angle,
                 padval=OVERRIDES.get("padval") or 0,
             )
-            data = data.map_blocks(deskew_func, dtype="float32", chunks=new_shape)
+            stacked_data = stacked_data.map_blocks(
+                deskew_func, dtype="float32", chunks=new_shape
+            )
     meta = {
         "channel_axis": 0,
         "scale": (1, dzdx_ratio, 1, 1),
@@ -192,4 +194,4 @@ def reader_function(path: PathLike) -> List[LayerData]:
     if settings:
         meta["metadata"] = settings
 
-    return [(data, meta)]
+    return [(stacked_data, meta)]

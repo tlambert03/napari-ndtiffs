@@ -34,3 +34,4 @@ from .settingstxt import parse_settings
 def napari_get_reader(path: PathLike) -> Optional[ReaderFunction]:
     if isinstance(path, str) and has_lls_data(path):
         return reader_function
+    return None

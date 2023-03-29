@@ -77,7 +77,6 @@ def get_gpu(reload=False):
 
 @lru_cache(maxsize=128)
 def get_affine_program(ctx, order: int = 1, mode="constant"):
-
     orders = [
         ["-D", "SAMPLER_FILTER=CLK_FILTER_NEAREST"],
         ["-D", "SAMPLER_FILTER=CLK_FILTER_LINEAR"],
@@ -97,7 +96,6 @@ def get_affine_program(ctx, order: int = 1, mode="constant"):
 
 
 def _debug_context(ctx):
-
     print(
         cl.get_supported_image_formats(
             ctx, cl.mem_flags.READ_WRITE, cl.mem_object_type.IMAGE3D
@@ -168,7 +166,6 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
 
     dtype = ary.dtype
     if num_channels is None:
-
         import pyopencl.cltypes
 
         try:
@@ -195,11 +192,11 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
     elif mode == "w":
         mode_flags = cl.mem_flags.WRITE_ONLY
     else:
-        raise ValueError("invalid value '%s' for 'mode'" % mode)
+        raise ValueError(f"invalid value '{mode}' for 'mode'")
 
     img_format, reshape = _get_image_format(ctx, num_channels, dtype, ary.ndim)
     if reshape:
-        # warnings.warn("Device support forced reshaping of single channel array to RGBA")
+        # warn("Device support forced reshaping of single channel array to RGBA")
         ary = np.ascontiguousarray(np.repeat(ary[..., np.newaxis], 4, axis=-1))
         shape = ary.shape[:-1]
         strides = ary.strides[:-1]
@@ -217,11 +214,8 @@ def _image_from_array(ctx, ary, num_channels=None, mode="r", norm_int=False):
 
 
 def image_from_array(arr, ctx, *args, **kwargs):
-
     if arr.ndim not in {2, 3, 4}:
-        raise ValueError(
-            "dimension of array wrong, should be 2 - 4 but is %s" % arr.ndim
-        )
+        raise ValueError(f"dimension of array wrong, should be 2 - 4 but is {arr.ndim}")
     if arr.dtype.type == np.complex64:
         num_channels = 2
         res = cl.Image.empty(arr.shape, dtype=np.float32, num_channels=num_channels)
@@ -230,7 +224,7 @@ def image_from_array(arr, ctx, *args, **kwargs):
     else:
         num_channels = arr.shape[-1] if arr.ndim == 4 else 1
         res = _image_from_array(
-            ctx, np.ascontiguousarray(arr), num_channels=num_channels, *args, **kwargs
+            ctx, np.ascontiguousarray(arr), *args, num_channels=num_channels, **kwargs
         )
         res.dtype = arr.dtype
 
@@ -288,7 +282,7 @@ def affine_transform(
             The input is extended by wrapping around to the opposite edge.
 
     cval : scalar, optional
-        Value to fill past edges of input if mode is ‘constant’. Default is 0.0.
+        Value to fill past edges of input if mode is `constant`. Default is 0.0.
     prefilter : bool, optional
         not supported
     """

@@ -1,7 +1,11 @@
+from importlib.metadata import PackageNotFoundError, version
+
 try:
-    from ._version import version as __version__
-except ImportError:
+    __version__ = version("napari-ndtiffs")
+except PackageNotFoundError:
+    # package is not installed
     __version__ = "unknown"
+
 __author__ = "Talley Lambert"
 __email__ = "talley.lambert@gmail.com"
 __all__ = [
@@ -20,8 +24,8 @@ from .reader import (
     PathLike,
     ReaderFunction,
     has_lls_data,
-    reader_function,
     parameter_override,
+    reader_function,
 )
 from .settingstxt import parse_settings
 

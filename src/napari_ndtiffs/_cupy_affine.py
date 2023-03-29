@@ -2,9 +2,18 @@ import cupy as cp
 from cupyx.scipy import ndimage as ndi_gpu
 
 
-def affine_transform(input, matrix, offset=0.0, output_shape=None,
-                     output=None, order=3, mode='constant', cval=0.0,
-                     prefilter=True, **kwargs):
+def affine_transform(
+    input,
+    matrix,
+    offset=0.0,
+    output_shape=None,
+    output=None,
+    order=3,
+    mode="constant",
+    cval=0.0,
+    prefilter=True,
+    **kwargs,
+):
     """CuPy affine_transform wrapper that handles host/device transfers.
 
     Parameters

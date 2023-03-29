@@ -11,20 +11,19 @@ def deskew_block(block, mat=None, out_shape=None, padval=0):
     try:
         from ._cupy_affine import affine_transform
 
-        backend_name = 'CuPy'
+        backend_name = "CuPy"
     except ImportError:
         logger.warning(
-            "Could not import CuPy. "
-            "Falling back to PyOpenCL for affine transforms"
+            "Could not import CuPy. " "Falling back to PyOpenCL for affine transforms"
         )
         try:
             from ._ocl_affine import affine_transform
 
-            backend_name = 'PyOpenCL'
+            backend_name = "PyOpenCL"
         except ImportError:
             from scipy.ndimage.interpolation import affine_transform
 
-            backend_name = 'SciPy'
+            backend_name = "SciPy"
             logger.warning(
                 "Could not import CuPy or PyOpenCL. "
                 "Falling back to SciPy for CPU affine transforms"

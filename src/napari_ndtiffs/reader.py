@@ -105,7 +105,7 @@ def get_tiff_meta(
         if not nz:
             raise ValueError(f"tiff file {path} has no pages!")
         first_page = tfile.pages[0]
-        shape = (nz,) + first_page.shape
+        shape = (nz, *first_page.shape)
         dtype = first_page.dtype
         _dx = first_page.tags.get("XResolution")
         if hasattr(_dx, "value"):

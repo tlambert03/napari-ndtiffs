@@ -1,5 +1,4 @@
 """Functions for parsing LLS Settings.txt files"""
-import io
 import logging
 import os
 import re
@@ -53,17 +52,17 @@ class LLSSettingsParserError(Exception):
 
 
 def parse_settings(path, pattern="*Settings.txt"):
-    """ Parse LLS Settings.txt file and return dict of info """
+    """Parse LLS Settings.txt file and return dict of info"""
     path = Path(path)
     if path.is_dir():
-        sfiles = [s for s in path.glob(pattern)]
-        if len(sfiles) == 0:
+        sfiles = list(path.glob(pattern))
+        if not sfiles:
             return {}
         if len(sfiles) > 1:
             logger.warn("Multiple Settings.txt files detected. " "Using first one.")
         path = sfiles[0]
     if not path.is_file():
-        raise FileNotFoundError("Could not read file: %s" % str(path))
+        raise FileNotFoundError(f"Could not read file: {str(path)}")
     if zipfile.is_zipfile(path):
         try:
             with zipfile.ZipFile(path) as z:
@@ -75,12 +74,12 @@ def parse_settings(path, pattern="*Settings.txt"):
                 )
                 with z.open(settext) as f:
                     text = f.read().decode()
-        except StopIteration:
+        except StopIteration as e:
             raise FileNotFoundError(
-                "Could not find Settings.txt in archive %s" % str(path)
-            )
+                f"Could not find Settings.txt in archive {str(path)}"
+            ) from e
     else:
-        with io.open(str(path), "r", encoding="utf-8") as f:
+        with open(str(path), encoding="utf-8") as f:
             text = f.read()
 
     sections = [t.strip() for t in re.split(r"(?:[\*\s]+)([^\*]+)", text) if t.strip()]
@@ -95,13 +94,9 @@ def parse_settings(path, pattern="*Settings.txt"):
 
     def _search(regex, default=None, func=lambda x: x, section=text):
         match = re.search(regex, sections[section])
-        if match and len(match.groups()):
-            return func(match.group(1).strip())
-        return default
+        return func(match[1].strip()) if match and len(match.groups()) else default
 
-    _D = dict(
-        params=dict(), camera=dict(), channels=defaultdict(lambda: defaultdict(dict)),
-    )
+    _D = dict(params={}, camera={}, channels=defaultdict(lambda: defaultdict(dict)))
 
     # basic stuff from General section
     searches = [
@@ -215,7 +210,7 @@ def parse_settings(path, pattern="*Settings.txt"):
 
 
 def numberdict(dct):
-    """ convert all numeric values in a dict to their appropriate type """
+    """convert all numeric values in a dict to their appropriate type"""
     o = {}
     for k, v in dct.items():
         if v.isdigit():
@@ -225,5 +220,5 @@ def numberdict(dct):
                 v = float(v)
             except ValueError:
                 v = v
-        o.update({k: v})
+        o[k] = v
     return o

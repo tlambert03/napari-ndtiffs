@@ -1,6 +1,119 @@
+# https://peps.python.org/pep-0517/
 [build-system]
-requires = ["setuptools>=42.0.0", "wheel", "setuptools_scm"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+# https://hatch.pypa.io/latest/config/metadata/
+[tool.hatch.version]
+source = "vcs"
+
+# https://peps.python.org/pep-0621/
+[project]
+name = "napari-ndtiffs"
+dynamic = ["version"]
+description = "napari plugin for nd tiff folders with OpenCl deskew"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "BSD-3-Clause" }
+authors = [{ name = "Talley Lambert", email = "talley.lambert@gmail.com" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Framework :: napari",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: BSD License",
+]
+# add your package dependencies here
+dependencies = [
+    "napari_plugin_engine>=0.1.4",
+    "numpy",
+    "dask[array]",
+    "python-dateutil",
+    "scipy",
+    "tifffile",
+]
+
+# https://peps.python.org/pep-0621/#dependencies-optional-dependencies
+# "extras" (e.g. for `pip install .[test]`)
+[project.optional-dependencies]
+opencl = ["pyopencl"]
+test = ["pytest", "pytest-cov", "pyopencl"]
+dev = [
+    "black",
+    "ipython",
+    "mypy",
+    "pdbpp",   # https://github.com/pdbpp/pdbpp
+    "rich",    # https://github.com/Textualize/rich
+    "ruff",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/tlambert03/napari-ndtiffs/issues"
+"Documentation" = "https://github.com/tlambert03/napari-ndtiffs#README.md"
+"Source Code" = "https://github.com/tlambert03/napari-ndtiffs"
+"User Support" = "https://github.com/tlambert03/napari-ndtiffs/issues"
+
+[project.entry-points."napari.manifest"]
+ndtiffs = "napari_ndtiffs:napari.yaml"
+
+# https://github.com/charliermarsh/ruff
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+# https://beta.ruff.rs/docs/rules/
+extend-select = [
+    "E",    # style errors
+    "W",    # style warnings
+    "F",    # flakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "A001", # flake8-builtins
+    "RUF",  # ruff-specific rules
+]
+
+# https://mypy.readthedocs.io/en/stable/config_file.html
+[tool.mypy]
+files = "src/**/"
+# strict = true
+disallow_any_generics = false
+disallow_subclassing_any = false
+show_error_codes = true
+pretty = true
+
+# https://docs.pytest.org/en/6.2.x/customize.html
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+# https://coverage.readthedocs.io/en/6.4/config.html
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "@overload",
+    "except ImportError",
+    "\\.\\.\\.",
+    "raise NotImplementedError()",
+]
+[tool.coverage.run]
+source = ["src"]
+
+# https://github.com/mgedmin/check-manifest#configuration
+# add files that you want check-manifest to explicitly ignore here
+# (files that are in the repo but shouldn't go in the package)
+[tool.check-manifest]
+ignore = [
+    ".github_changelog_generator",
+    ".pre-commit-config.yaml",
+    ".ruff_cache/**/*",
+    "setup.py",
+    "tests/**/*",
+]
 
 [tool.napari.manifest]
 display_name = "ND-Tiffs"

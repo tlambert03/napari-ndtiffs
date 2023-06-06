@@ -62,7 +62,7 @@ def parse_settings(path, pattern="*Settings.txt"):
             logger.warn("Multiple Settings.txt files detected. " "Using first one.")
         path = sfiles[0]
     if not path.is_file():
-        raise FileNotFoundError(f"Could not read file: {str(path)}")
+        raise FileNotFoundError(f"Could not read file: {path!s}")
     if zipfile.is_zipfile(path):
         try:
             with zipfile.ZipFile(path) as z:
@@ -76,7 +76,7 @@ def parse_settings(path, pattern="*Settings.txt"):
                     text = f.read().decode()
         except StopIteration as e:
             raise FileNotFoundError(
-                f"Could not find Settings.txt in archive {str(path)}"
+                f"Could not find Settings.txt in archive {path!s}"
             ) from e
     else:
         with open(str(path), encoding="utf-8") as f:

@@ -89,7 +89,7 @@ def parse_settings(path, pattern="*Settings.txt"):
     for k in ("General", "Waveform", "Camera"):
         if k not in sections:
             raise LLSSettingsParserError(
-                "Cannot parse settings file without " '"{}"" section'.format(k)
+                "Cannot parse settings file without " f'"{k}"" section'
             )
 
     def _search(regex, default=None, func=lambda x: x, section=text):

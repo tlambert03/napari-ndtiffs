@@ -32,7 +32,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           mamba-version: "*"
           auto-update-conda: true

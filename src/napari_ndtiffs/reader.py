@@ -1,4 +1,5 @@
 """Plugin to read lattice light sheet folders into napari."""
+
 from __future__ import annotations
 
 import glob

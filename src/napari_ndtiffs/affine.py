@@ -1,4 +1,5 @@
 """Deskew utilities"""
+
 import logging
 from functools import lru_cache
 from time import time

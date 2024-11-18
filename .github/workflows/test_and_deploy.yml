@@ -50,7 +50,7 @@ jobs:
         run: pytest -v --cov=./ --cov-report=xml
 
       - name: Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
 
   deploy:
     needs: [test]

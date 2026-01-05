@@ -10,8 +10,8 @@ __author__ = "Talley Lambert"
 __email__ = "talley.lambert@gmail.com"
 __all__ = [
     "napari_get_reader",
-    "parse_settings",
     "parameter_override",
+    "parse_settings",
     "reader_function",
 ]
 
